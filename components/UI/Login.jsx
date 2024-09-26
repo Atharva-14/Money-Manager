@@ -1,12 +1,14 @@
 import Label from "./Label";
 import Input from "./Input";
 import { useRef, useState } from "react";
-import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/router";
 
 const Login = () => {
   const [isLoading, setLoading] = useState(false);
   const { logInUser, token } = useAuth();
+  const router = useRouter();
+
   const emailRef = useRef();
   const passwordRef = useRef();
 
@@ -22,7 +24,9 @@ const Login = () => {
     try {
       const res = await logInUser(formData);
 
-      console.log("Response", res);
+      if (res.is_success) {
+        router.push("/");
+      }
     } catch (error) {
       console.error("Unable to Login", error);
     } finally {

@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // const authToken = localStorage.getItem("authToken") || null;
     const token = Cookies.get("authToken") || null;
 
     setToken(token);
@@ -21,18 +20,20 @@ export const AuthProvider = ({ children }) => {
     try {
       const {
         data: { is_success, result },
-      } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/login`, {
-        params: {
-          email: formData.email,
-          password_hash: formData.password_hash,
-        },
-      });
+      } = await axios.get(
+        `https://money-manager-backend-bsdc.onrender.com/api/user/login`,
+        {
+          params: {
+            email: formData.email,
+            password_hash: formData.password_hash,
+          },
+        }
+      );
 
       const expiresIn = 120 * 60 * 1000;
 
       if (is_success) {
         setToken(result.token);
-        // localStorage.setItem("authToken", JSON.stringify(result.token));
 
         Cookies.set("authToken", result.token, {
           expires: new Date(new Date().getTime() + expiresIn),
@@ -56,7 +57,7 @@ export const AuthProvider = ({ children }) => {
       const {
         data: { is_success, result },
       } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/create`,
+        `https://money-manager-backend-bsdc.onrender.com/api/user/create`,
         formData,
         {
           headers: { "Content-Type": "application/json" },
@@ -65,7 +66,6 @@ export const AuthProvider = ({ children }) => {
 
       if (is_success) {
         setToken(result.token);
-        // localStorage.setItem("authToken", JSON.stringify(result.token));
 
         Cookies.set("authToken", result.token, {
           expires: new Date(new Date().getTime() + expiresIn),

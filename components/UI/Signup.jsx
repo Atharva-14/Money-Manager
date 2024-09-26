@@ -1,12 +1,13 @@
 import Label from "./Label";
 import Input from "./Input";
 import { useRef, useState } from "react";
-import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/router";
 
 const Signup = () => {
   const [isLoading, setLoading] = useState(false);
   const { signupUser } = useAuth();
+  const router = useRouter();
 
   const nameRef = useRef();
   const emailRef = useRef();
@@ -25,7 +26,9 @@ const Signup = () => {
     try {
       const res = await signupUser(formData);
 
-      console.log("Response", res);
+      if (res.is_success) {
+        router.push("/");
+      }
     } catch (error) {
       console.error("Unable to create user", error);
     } finally {
