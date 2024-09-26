@@ -1,24 +1,36 @@
 import Label from "./Label";
 import Input from "./Input";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
+  const [isLoading, setLoading] = useState(false);
+  const { logInUser, token } = useAuth();
   const emailRef = useRef();
   const passwordRef = useRef();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = {
       email: emailRef.current.value,
-      password: passwordRef.current.value,
+      password_hash: passwordRef.current.value,
     };
+    setLoading(true);
 
-    console.log("formData", formData);
+    try {
+      const res = await logInUser(formData);
 
-    emailRef.current.value = "";
-    passwordRef.current.value = "";
+      console.log("Response", res);
+    } catch (error) {
+      console.error("Unable to Login", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  console.log(token);
 
   return (
     <form className="my-8" onSubmit={handleSubmit}>
