@@ -7,8 +7,11 @@ import { useEffect, useState } from "react";
 const Category = () => {
   const [activeTab, setActiveTab] = useState("expense");
   const { token } = useAuth();
+  const [expenses, setExpenses] = useState([]);
+  const [incomes, setIncomes] = useState([]);
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -17,7 +20,7 @@ const Category = () => {
   const getCategories = async () => {
     try {
       const res = await axios.get(
-        `https://money-manager-backend-bsdc.onrender.com/api/categeroies/`,
+        `https://money-manager-backend-bsdc.onrender.com/api/categories/`,
         {
           params: {
             token,
@@ -25,23 +28,49 @@ const Category = () => {
         }
       );
 
-      console.log("Category Response", res.data);
+      const categories = res.data.result;
+
+      const expenseCategories = categories.filter(
+        (category) => category.type_of === "expense"
+      );
+
+      const incomeCategories = categories.filter(
+        (category) => category.type_of === "income"
+      );
+
+      setExpenses(expenseCategories);
+      setIncomes(incomeCategories);
     } catch (error) {
       console.log("Failed to fetch Categories", error);
     }
   };
 
-  const openCategoryModal = () => setModalOpen(true);
+  const openCategoryModal = (category = null) => {
+    setSelectedCategory(category);
+    setModalOpen(true);
+  };
 
-  const closeCategoryModal = () => setModalOpen(false);
+  const closeCategoryModal = () => {
+    setModalOpen(false);
+    setSelectedCategory(null);
+  };
 
   useEffect(() => {
     getCategories();
-  }, [getCategories]);
+  }, []);
+
+  const displayedCategories = activeTab === "expense" ? expenses : incomes;
+
+  console.log(displayedCategories);
 
   return (
     <>
-      <AddNewCategory open={isModalOpen} onClose={closeCategoryModal} />
+      <AddNewCategory
+        open={isModalOpen}
+        onClose={closeCategoryModal}
+        onCategoryAdded={getCategories}
+        categoryData={selectedCategory}
+      />
       <div className="w-full h-full flex flex-col bg-[#09090b] py-10 px-[100px]">
         <h1 className="font-bold text-2xl mb-6 text-white">Categories</h1>
         <div className="flex space-x-4 border-b border-b-gray-600">
@@ -63,24 +92,34 @@ const Category = () => {
           </button>
         </div>
         <div className="py-3">
-          <div className="p-2">
-            <h2 className="text-white font-semibold">Title</h2>
-            <p className="text-gray-300 text-sm">Description</p>
-          </div>
-          <div className="p-2">
-            <h2 className="text-white font-semibold">Title</h2>
-            <p className="text-gray-300 text-sm">Description</p>
-          </div>
-          <div className="p-2">
-            <h2 className="text-white font-semibold">Title</h2>
-            <p className="text-gray-300 text-sm">Description</p>
-          </div>
+          {displayedCategories.length > 0 ? (
+            displayedCategories.map((item) => (
+              <div
+                className="p-2 hover:bg-zinc-800 hover:rounded-md cursor-pointer"
+                key={item.category_id}
+                onClick={() => openCategoryModal(item)}
+              >
+                <h2 className="text-white font-semibold">
+                  {item.category_name}
+                </h2>
+                <div className="flex space-x-2 text-gray-300 text-sm">
+                  {item.subcategories.map((i) => (
+                    <p className="bg-zinc-700 py-1 px-3 rounded-2xl" key={i.id}>
+                      {i.subcategory_name}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-400">No categories found.</p>
+          )}
         </div>
         <div className="border-dashed border-zinc-700 rounded border-2 flex flex-col space-y-4 justify-center items-center py-10">
           <h3 className="text-white font-semibold">Add a new category</h3>
           <button
             className="text-white py-2 px-4 rounded bg-zinc-800"
-            onClick={openCategoryModal}
+            onClick={() => openCategoryModal()}
           >
             Add
           </button>
