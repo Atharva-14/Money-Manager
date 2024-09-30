@@ -10,13 +10,13 @@ const Sidebar = () => {
         <Link href="/" className="text-lg">
           Dashboard
         </Link>
-        <Link href="/transaction" className="text-lg">
+        <Link href="/transactions" className="text-lg">
           Transaction
         </Link>
         <Link href="/category" className="text-lg">
           Categories
         </Link>
-        <Link href="/banks" className="text-lg">
+        <Link href="/bank" className="text-lg">
           Banks
         </Link>
       </div>
