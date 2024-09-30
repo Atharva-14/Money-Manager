@@ -203,7 +203,7 @@ const AddNewCategory = ({ open, onClose, onCategoryAdded, categoryData }) => {
             Cancel
           </button>
           <button
-            className="text-zinc-200 font-medium py-2 px-4 bg-[#333333] rounded"
+            className="text-zinc-200 font-medium py-2 px-4 bg-[#333333] hover:bg-[#1f1f1d] rounded"
             type="submit"
           >
             Save
