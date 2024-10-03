@@ -7,12 +7,20 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState();
+  const [user, setUser] = useState();
   const router = useRouter();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const token = Cookies.get("authToken") || null;
+    const userinfo = Cookies.get("authUser") || null;
 
+    let u = null;
+    if (userinfo) {
+      u = JSON.parse(userinfo);
+    }
+
+    setUser(u);
     setToken(token);
   }, []);
 
@@ -34,13 +42,19 @@ export const AuthProvider = ({ children }) => {
 
       if (is_success) {
         setToken(result.token);
+        const userObj = {
+          email: result.email,
+          username: result.username,
+        };
+        setUser(userObj);
 
         Cookies.set("authToken", result.token, {
           expires: new Date(new Date().getTime() + expiresIn),
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
         });
-        Cookies.set("tokenExpiresAt", new Date().getTime() + expiresIn, {
+        Cookies.set("authUser", JSON.stringify(userObj), {
+          expires: new Date(new Date().getTime() + expiresIn),
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
         });
@@ -66,13 +80,19 @@ export const AuthProvider = ({ children }) => {
 
       if (is_success) {
         setToken(result.token);
+        const userObj = {
+          email: result.email,
+          username: result.username,
+        };
+        setUser(userObj);
 
         Cookies.set("authToken", result.token, {
           expires: new Date(new Date().getTime() + expiresIn),
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
         });
-        Cookies.set("tokenExpiresAt", new Date().getTime() + expiresIn, {
+        Cookies.set("authUser", JSON.stringify(userObj), {
+          expires: new Date(new Date().getTime() + expiresIn),
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
         });
@@ -84,8 +104,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const logoutUser = () => {
+    setToken(null);
+    setUser(null);
+
+    Cookies.remove("authToken");
+    Cookies.remove("authUser");
+
+    router.push("/auth");
+  };
+
   return (
-    <AuthContext.Provider value={{ token, logInUser, signupUser }}>
+    <AuthContext.Provider
+      value={{ token, user, logInUser, signupUser, logoutUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

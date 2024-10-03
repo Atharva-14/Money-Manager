@@ -2,10 +2,16 @@ import { useEffect, useRef } from "react";
 import Label from "../UI/Label";
 import Input from "../UI/Input";
 import TextArea from "../UI/TextArea";
-import bank from "@/pages/bank";
 
-const TransactionModal = ({ open, onClose, banks, categories }) => {
+const TransactionModal = ({
+  open,
+  onClose,
+  banks,
+  categories,
+  trasactionData,
+}) => {
   const dialogRef = useRef();
+  const amountRef = useRef();
 
   useEffect(() => {
     if (dialogRef.current) {
@@ -16,6 +22,12 @@ const TransactionModal = ({ open, onClose, banks, categories }) => {
       }
     }
   }, [open]);
+
+  useEffect(() => {
+    if (trasactionData && open) {
+      
+    }
+  }, [trasactionData, open]);
 
   return (
     <dialog

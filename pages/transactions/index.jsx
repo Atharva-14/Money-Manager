@@ -9,10 +9,14 @@ const Transactions = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [banks, setBanks] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
 
   const { token } = useAuth();
 
   const openTransactionModal = (transaction = null) => {
+    setSelectedTransaction(transaction);
     setModalOpen(true);
   };
 
@@ -49,7 +53,30 @@ const Transactions = () => {
     }
   };
 
+  const fetchTransactions = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(
+        `https://money-manager-backend-bsdc.onrender.com/api/transactions/`,
+        {
+          params: {
+            token,
+          },
+        }
+      );
+      const transArr = res.data.result;
+      console.log("Transactions: ", transArr);
+      setTransactions(transArr);
+    } catch (error) {
+      console.error("Unable to fetch transaction: ", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    fetchTransactions();
     fetchBankAndCategoriesDetails();
   }, []);
 
@@ -60,6 +87,7 @@ const Transactions = () => {
         onClose={closeTransactionModal}
         banks={banks}
         categories={categories}
+        transactionData={selectedTransaction}
       />
       <div className="w-full h-full flex flex-col bg-[#09090b] py-10 px-[100px]">
         <div className="flex justify-between mb-6">
@@ -89,66 +117,33 @@ const Transactions = () => {
           </button>
         </div>
         <div>
-          <div className="flex items-center justify-between">
-            <div className="flex">
-              <IconTransfer className="text-zinc-200 h-14 w-14 p-2 bg-zinc-700 rounded-lg mr-4" />
-              <div className="flex flex-col">
-                <h3 className="text-zinc-200 font-medium">
-                  Transfer from State Bank of India
-                </h3>
-                <p className="text-sm text-zinc-400">
-                  Transfer from State Bank of India
-                </p>
-                <p className="text-sm text-zinc-400">₹1,000 on Sep 28, 2024</p>
+          {isLoading ? (
+            <p>Loading</p>
+          ) : transactions.length > 0 ? (
+            transactions.map((trans) => (
+              <div className="flex items-center justify-between" key={trans.id}>
+                <div className="flex">
+                  <IconTransfer className="text-zinc-200 h-14 w-14 p-2 bg-zinc-700 rounded-lg mr-4" />
+                  <div className="flex flex-col">
+                    <h3 className="text-zinc-200 font-medium">
+                      Transfer from State Bank of India
+                    </h3>
+                    <p className="text-sm text-zinc-400">
+                      Transfer from State Bank of India
+                    </p>
+                    <p className="text-sm text-zinc-400">
+                      ₹1,000 on Sep 28, 2024
+                    </p>
+                  </div>
+                </div>
+                <IconEdit className="text-zinc-500 h-6 w-6 hover:text-zinc-300 cursor-pointer" />
               </div>
-            </div>
-            <IconEdit className="text-zinc-300 h-8 w-8" />
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex">
-              <IconTransfer className="text-zinc-200 h-14 w-14 p-2 bg-zinc-700 rounded-lg mr-4" />
-              <div className="flex flex-col">
-                <h3 className="text-zinc-200 font-medium">
-                  Transfer from State Bank of India
-                </h3>
-                <p className="text-sm text-zinc-400">
-                  Transfer from State Bank of India
-                </p>
-                <p className="text-sm text-zinc-400">₹1,000 on Sep 28, 2024</p>
-              </div>
-            </div>
-            <IconEdit className="text-zinc-300 h-8 w-8" />
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex">
-              <IconTransfer className="text-zinc-200 h-14 w-14 p-2 bg-zinc-700 rounded-lg mr-4" />
-              <div className="flex flex-col">
-                <h3 className="text-zinc-200 font-medium">
-                  Transfer from State Bank of India
-                </h3>
-                <p className="text-sm text-zinc-400">
-                  Transfer from State Bank of India
-                </p>
-                <p className="text-sm text-zinc-400">₹1,000 on Sep 28, 2024</p>
-              </div>
-            </div>
-            <IconEdit className="text-zinc-300 h-8 w-8" />
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex">
-              <IconTransfer className="text-zinc-200 h-14 w-14 p-2 bg-zinc-700 rounded-lg mr-4" />
-              <div className="flex flex-col">
-                <h3 className="text-zinc-200 font-medium">
-                  Transfer from State Bank of India
-                </h3>
-                <p className="text-sm text-zinc-400">
-                  Transfer from State Bank of India
-                </p>
-                <p className="text-sm text-zinc-400">₹1,000 on Sep 28, 2024</p>
-              </div>
-            </div>
-            <IconEdit className="text-zinc-300 h-8 w-8" />
-          </div>
+            ))
+          ) : (
+            <p className="text-zinc-400 font-bold text-2xl mt-2">
+              No Transactions. Please add some.
+            </p>
+          )}
         </div>
       </div>
     </>
