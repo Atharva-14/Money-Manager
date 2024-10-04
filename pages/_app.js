@@ -14,7 +14,7 @@ export default function App({ Component, pageProps }) {
             <Sidebar />
           </div>
         )}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-[#09090b]">
           <Component {...pageProps} />
         </div>
       </div>

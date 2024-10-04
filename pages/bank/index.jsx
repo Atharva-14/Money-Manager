@@ -12,6 +12,7 @@ const Bank = () => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const [selectedBank, setSelectedBank] = useState(null);
+  const [isLoading, setLoading] = useState(false);
 
   const openBankModal = (bank = null) => {
     setSelectedBank(bank);
@@ -24,6 +25,8 @@ const Bank = () => {
   };
 
   const getBanks = async () => {
+    setLoading(true);
+
     try {
       const res = await axios.get(
         `https://money-manager-backend-bsdc.onrender.com/api/bank/`,
@@ -38,6 +41,8 @@ const Bank = () => {
       setBanks(banksArr);
     } catch (error) {
       console.error("Unable to fetch banks", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,7 +84,41 @@ const Bank = () => {
         <div>
           <h2 className="font-semibold text-white mb-6">Connected Accounts</h2>
           <div className="flex flex-col space-y-6 mb-6 mx-1">
-            {banks &&
+            {isLoading ? (
+              <div className="space-y-2">
+                <div className="flex justify-between items-center w-full rounded-lg">
+                  <div className="flex space-x-2 items-center">
+                    <p className="animate-pulse h-10 w-14 rounded bg-neutral-800 " />
+
+                    <div className="flex flex-col space-y-2">
+                      <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
+                      <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
+                    </div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
+                    <p className="animate-pulse h-3 w-4 rounded bg-neutral-800 " />
+                    <p className="animate-pulse h-3 w-4 rounded bg-neutral-800 " />
+                  </div>
+                </div>
+                <div className="flex justify-between items-center w-full rounded-lg">
+                  <div className="flex space-x-2 items-center">
+                    <p className="animate-pulse h-10 w-14 rounded bg-neutral-800 " />
+
+                    <div className="flex flex-col space-y-2">
+                      <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
+                      <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
+                    </div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
+                    <p className="animate-pulse h-3 w-4 rounded bg-neutral-800 " />
+                    <p className="animate-pulse h-3 w-4 rounded bg-neutral-800 " />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              banks &&
               banks.map((bank) => (
                 <div
                   className="flex justify-between items-center"
@@ -104,8 +143,10 @@ const Bank = () => {
                     />
                   </div>
                 </div>
-              ))}
+              ))
+            )}
           </div>
+
           <div>
             <h2 className="font-semibold text-white mb-4">Add Account</h2>
             <button

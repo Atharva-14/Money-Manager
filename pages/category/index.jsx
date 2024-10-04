@@ -12,12 +12,14 @@ const Category = () => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [isLoading, setLoading] = useState(false);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
   const getCategories = async () => {
+    setLoading(true);
     try {
       const res = await axios.get(
         `https://money-manager-backend-bsdc.onrender.com/api/categories/`,
@@ -42,6 +44,8 @@ const Category = () => {
       setIncomes(incomeCategories);
     } catch (error) {
       console.log("Failed to fetch Categories", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,7 +75,7 @@ const Category = () => {
         onCategoryAdded={getCategories}
         categoryData={selectedCategory}
       />
-      <div className="w-full h-full flex flex-col bg-[#09090b] py-10 px-[100px]">
+      <div className=" min-h-max flex flex-col bg-[#09090b] py-10 px-[100px]">
         <h1 className="font-bold text-2xl mb-6 text-white">Categories</h1>
         <div className="flex space-x-4 border-b border-b-gray-600">
           <button
@@ -92,7 +96,28 @@ const Category = () => {
           </button>
         </div>
         <div className="py-3">
-          {displayedCategories.length > 0 ? (
+          {isLoading ? (
+            <div className='space-y-4'>
+              <div className="space-y-2 w-full">
+                <p className="animate-pulse h-3 w-[150px] rounded bg-neutral-800 " />
+
+                <div className="flex space-x-2">
+                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
+                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
+                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
+                </div>
+              </div>
+              <div className="space-y-2 w-full">
+                <p className="animate-pulse h-3 w-[150px] rounded bg-neutral-800 " />
+
+                <div className="flex space-x-2">
+                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
+                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
+                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
+                </div>
+              </div>
+            </div>
+          ) : displayedCategories.length > 0 ? (
             displayedCategories.map((item) => (
               <div
                 className="p-2 hover:bg-zinc-800 hover:rounded-md cursor-pointer"
