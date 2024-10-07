@@ -1,7 +1,14 @@
 import PrivateRoute from "@/components/PrivateRoute/PrivateRoute";
 import TransactionModal from "@/components/Transaction/TransactionModal";
 import { useAuth } from "@/context/AuthContext";
-import { IconEdit, IconPlus, IconTransfer } from "@tabler/icons-react";
+import { formatIndianCurrency } from "@/utils/utils";
+import {
+  IconArrowDownLeft,
+  IconArrowUpRight,
+  IconEdit,
+  IconPlus,
+  IconTransfer,
+} from "@tabler/icons-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -16,6 +23,8 @@ const Transactions = () => {
   const { token } = useAuth();
 
   const openTransactionModal = (transaction = null) => {
+    console.log("open modal", transaction);
+
     setSelectedTransaction(transaction);
     setModalOpen(true);
   };
@@ -67,12 +76,20 @@ const Transactions = () => {
       );
       const transArr = res.data.result;
       console.log("Transactions: ", transArr);
-      setTransactions(transArr);
+      const sortedTransactions = transArr.sort(
+        (a, b) => new Date(b?.transaction_date) - new Date(a?.transaction_date)
+      );
+      setTransactions(sortedTransactions);
     } catch (error) {
       console.error("Unable to fetch transaction: ", error.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const getBankName = (bank_id) => {
+    const bank = banks.find((b) => b.bank_id === bank_id);
+    return bank?.bank_name;
   };
 
   useEffect(() => {
@@ -88,6 +105,7 @@ const Transactions = () => {
         banks={banks}
         categories={categories}
         transactionData={selectedTransaction}
+        updateData={fetchTransactions}
       />
       <div className="w-full h-full flex flex-col bg-[#09090b] py-10 px-[100px]">
         <div className="flex justify-between mb-6">
@@ -116,27 +134,42 @@ const Transactions = () => {
             Expense
           </button>
         </div>
-        <div>
+        <div className="space-y-2">
           {isLoading ? (
             <p>Loading</p>
           ) : transactions.length > 0 ? (
             transactions.map((trans) => (
-              <div className="flex items-center justify-between" key={trans.id}>
-                <div className="flex">
-                  <IconTransfer className="text-zinc-200 h-14 w-14 p-2 bg-zinc-700 rounded-lg mr-4" />
+              <div
+                className="flex items-center justify-between"
+                key={trans.transaction_id}
+              >
+                <div className="flex items-center">
+                  {trans.transaction_type === "transfer" ? (
+                    <IconTransfer className="text-zinc-200 h-14 w-14 p-2 bg-zinc-700 rounded-lg mr-4" />
+                  ) : trans.transaction_type === "expense" ? (
+                    <IconArrowUpRight className="text-zinc-200 h-14 w-14 p-2 bg-zinc-700 rounded-lg mr-4" />
+                  ) : (
+                    <IconArrowDownLeft className="text-zinc-200 h-14 w-14 p-2 bg-zinc-700 rounded-lg mr-4" />
+                  )}
                   <div className="flex flex-col">
                     <h3 className="text-zinc-200 font-medium">
-                      Transfer from State Bank of India
+                      Transcation for {trans.description}
                     </h3>
                     <p className="text-sm text-zinc-400">
-                      Transfer from State Bank of India
+                      Transfer from {getBankName(trans.bank_id)}
                     </p>
-                    <p className="text-sm text-zinc-400">
-                      ₹1,000 on Sep 28, 2024
-                    </p>
+                    <p className="text-zinc-400">{trans.transaction_date}</p>
                   </div>
                 </div>
-                <IconEdit className="text-zinc-500 h-6 w-6 hover:text-zinc-300 cursor-pointer" />
+                <div className="flex space-x-3">
+                  <p className="text-zinc-200 font-mono">
+                    {formatIndianCurrency(trans.amount)}
+                  </p>
+                  <IconEdit
+                    className="text-zinc-500 h-6 w-6 hover:text-zinc-300 cursor-pointer"
+                    onClick={() => openTransactionModal(trans)}
+                  />
+                </div>
               </div>
             ))
           ) : (

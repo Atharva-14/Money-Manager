@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^3.19.0",
+    "@types/react": "^18.3.11",
     "axios": "^1.7.7",
     "boring-avatars": "^1.11.2",
     "cookie": "^0.6.0",
