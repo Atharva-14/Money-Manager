@@ -1,5 +1,7 @@
 import BankModal from "@/components/Bank/BankModal";
 import PrivateRoute from "@/components/PrivateRoute/PrivateRoute";
+import Skeleton from "@/components/Skeleton/Skeleton";
+import SkeletonBank from "@/components/Skeleton/SkeletonBank";
 import { useAuth } from "@/context/AuthContext";
 import { formatIndianCurrency } from "@/utils/utils";
 import { IconBuildingBank, IconEdit, IconTrash } from "@tabler/icons-react";
@@ -78,44 +80,18 @@ const Bank = () => {
         bankData={selectedBank}
         fetchBank={getBanks}
       />
-      <div className="w-full h-full flex flex-col bg-[#09090b] py-10 px-[150px]">
+      <div className="w-full h-full flex flex-col py-10 px-[150px]">
         <h1 className="font-bold text-2xl text-white mb-6">Bank</h1>
 
         <div>
           <h2 className="font-semibold text-white mb-6">Connected Accounts</h2>
           <div className="flex flex-col space-y-6 mb-6 mx-1">
             {isLoading ? (
-              <div className="space-y-2">
-                <div className="flex justify-between items-center w-full rounded-lg">
-                  <div className="flex space-x-2 items-center">
-                    <p className="animate-pulse h-10 w-14 rounded bg-neutral-800 " />
-
-                    <div className="flex flex-col space-y-2">
-                      <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
-                      <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
-                    <p className="animate-pulse h-3 w-4 rounded bg-neutral-800 " />
-                    <p className="animate-pulse h-3 w-4 rounded bg-neutral-800 " />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center w-full rounded-lg">
-                  <div className="flex space-x-2 items-center">
-                    <p className="animate-pulse h-10 w-14 rounded bg-neutral-800 " />
-
-                    <div className="flex flex-col space-y-2">
-                      <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
-                      <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <p className="animate-pulse h-3 w-24 rounded bg-neutral-800 " />
-                    <p className="animate-pulse h-3 w-4 rounded bg-neutral-800 " />
-                    <p className="animate-pulse h-3 w-4 rounded bg-neutral-800 " />
-                  </div>
-                </div>
+              <div className="space-y-3">
+                <SkeletonBank />
+                <SkeletonBank />
+                <SkeletonBank />
+                <SkeletonBank />
               </div>
             ) : (
               banks &&

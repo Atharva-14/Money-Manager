@@ -1,4 +1,6 @@
 import PrivateRoute from "@/components/PrivateRoute/PrivateRoute";
+import Skeleton from "@/components/Skeleton/Skeleton";
+import SkeletonTransaction from "@/components/Skeleton/SkeletonTransaction";
 import TransactionModal from "@/components/Transaction/TransactionModal";
 import { useAuth } from "@/context/AuthContext";
 import { formatIndianCurrency } from "@/utils/utils";
@@ -136,7 +138,13 @@ const Transactions = () => {
         </div>
         <div className="space-y-2">
           {isLoading ? (
-            <p>Loading</p>
+            <div className="space-y-4">
+              <SkeletonTransaction />
+              <SkeletonTransaction />
+              <SkeletonTransaction />
+              <SkeletonTransaction />
+              <SkeletonTransaction />
+            </div>
           ) : transactions.length > 0 ? (
             transactions.map((trans) => (
               <div

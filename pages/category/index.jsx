@@ -1,5 +1,6 @@
 import AddNewCategory from "@/components/Category/AddNewCategory";
 import PrivateRoute from "@/components/PrivateRoute/PrivateRoute";
+import SkeletonCategory from "@/components/Skeleton/SkeletonCategory";
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -97,25 +98,11 @@ const Category = () => {
         </div>
         <div className="py-3">
           {isLoading ? (
-            <div className='space-y-4'>
-              <div className="space-y-2 w-full">
-                <p className="animate-pulse h-3 w-[150px] rounded bg-neutral-800 " />
-
-                <div className="flex space-x-2">
-                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
-                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
-                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
-                </div>
-              </div>
-              <div className="space-y-2 w-full">
-                <p className="animate-pulse h-3 w-[150px] rounded bg-neutral-800 " />
-
-                <div className="flex space-x-2">
-                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
-                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
-                  <p className="animate-pulse h-5 w-16 rounded-xl bg-neutral-800 " />
-                </div>
-              </div>
+            <div className="space-y-4">
+              <SkeletonCategory />
+              <SkeletonCategory />
+              <SkeletonCategory />
+              <SkeletonCategory />
             </div>
           ) : displayedCategories.length > 0 ? (
             displayedCategories.map((item) => (
