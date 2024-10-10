@@ -76,7 +76,7 @@ const Category = () => {
         onCategoryAdded={getCategories}
         categoryData={selectedCategory}
       />
-      <div className=" min-h-max flex flex-col bg-[#09090b] py-10 px-[100px]">
+      <div className=" min-h-max flex flex-col py-10 px-[100px]">
         <h1 className="font-bold text-2xl mb-6 text-white">Categories</h1>
         <div className="flex space-x-4 border-b border-b-gray-600">
           <button

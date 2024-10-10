@@ -109,7 +109,7 @@ const Transactions = () => {
         transactionData={selectedTransaction}
         updateData={fetchTransactions}
       />
-      <div className="w-full h-full flex flex-col bg-[#09090b] py-10 px-[100px]">
+      <div className="w-full h-full flex flex-col py-10 px-[100px]">
         <div className="flex justify-between mb-6">
           <h1 className="font-bold text-2xl text-white p-2">Transactions</h1>
           <button
