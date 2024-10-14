@@ -1,20 +1,30 @@
 import BankModal from "@/components/Bank/BankModal";
 import PrivateRoute from "@/components/PrivateRoute/PrivateRoute";
-import Skeleton from "@/components/Skeleton/Skeleton";
 import SkeletonBank from "@/components/Skeleton/SkeletonBank";
 import { useAuth } from "@/context/AuthContext";
+import { getBanks } from "@/store/async-thunk";
 import { formatIndianCurrency } from "@/utils/utils";
 import { IconBuildingBank, IconEdit, IconTrash } from "@tabler/icons-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const Bank = () => {
   const { token } = useAuth();
-  const [banks, setBanks] = useState([]);
-  const [isModalOpen, setModalOpen] = useState(false);
 
+  const [isModalOpen, setModalOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState(null);
-  const [isLoading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const banks = useSelector((state) => state.bank.bankList);
+  const isLoading = useSelector((state) => state.bank.loading);
+
+  useEffect(() => {
+    if (token) {
+      dispatch(getBanks(token));
+    }
+  }, [dispatch, token]);
 
   const openBankModal = (bank = null) => {
     setSelectedBank(bank);
@@ -24,28 +34,6 @@ const Bank = () => {
   const closeBankModal = () => {
     setModalOpen(false);
     setSelectedBank(null);
-  };
-
-  const getBanks = async () => {
-    setLoading(true);
-
-    try {
-      const res = await axios.get(
-        `https://money-manager-backend-bsdc.onrender.com/api/bank/`,
-        {
-          params: {
-            token,
-          },
-        }
-      );
-      const banksArr = res.data.result;
-      console.log("Banks", banksArr);
-      setBanks(banksArr);
-    } catch (error) {
-      console.error("Unable to fetch banks", error.message);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const deleteBank = async (id) => {
@@ -68,17 +56,13 @@ const Bank = () => {
     }
   };
 
-  useEffect(() => {
-    getBanks();
-  }, []);
-
   return (
     <>
       <BankModal
         open={isModalOpen}
         onClose={closeBankModal}
         bankData={selectedBank}
-        fetchBank={getBanks}
+        fetchBank={() => dispatch(getBanks(token))}
       />
       <div className="w-full h-full flex flex-col py-10 px-[150px]">
         <h1 className="font-bold text-2xl text-white mb-6">Bank</h1>

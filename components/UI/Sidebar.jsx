@@ -22,6 +22,45 @@ const Sidebar = () => {
     setOpen(!open);
   };
 
+  const menuLink = [
+    {
+      link: "/",
+      label: "Dashboard",
+      icon: (
+        <IconChartBar
+          className={`text-zinc-300 ${open ? "w-6 h-6 mx-3" : "w-8 h-8"}`}
+        />
+      ),
+    },
+    {
+      link: "/transactions",
+      label: "Transaction",
+      icon: (
+        <IconTransactionRupee
+          className={`text-zinc-300 ${open ? "w-6 h-6 mx-3" : "w-8 h-8"}`}
+        />
+      ),
+    },
+    {
+      link: "/category",
+      label: "Categories",
+      icon: (
+        <IconCategory
+          className={`text-zinc-300 ${open ? "w-6 h-6 mx-3" : "w-8 h-8"}`}
+        />
+      ),
+    },
+    {
+      link: "/bank",
+      label: "Banks",
+      icon: (
+        <IconBuildingBank
+          className={`text-zinc-300 ${open ? "w-6 h-6 mx-3" : "w-8 h-8"}`}
+        />
+      ),
+    },
+  ];
+
   return (
     <motion.nav
       className="flex flex-col justify-between px-4 w-[300px] h-screen bg-[#1f1f1d] flex-shrink-0"
@@ -60,87 +99,16 @@ const Sidebar = () => {
                 : "bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-2 h-[1px] w-full"
             }`}
           />
-
-          <Link
-            href="/"
-            className="flex items-center justify-start gap-2 group/sidebar py-2"
-          >
-            <IconChartBar
-              className={`text-zinc-300 ${open ? "w-6 h-6 mx-3" : "w-8 h-8"}`}
-            />
-            <motion.p
-              className="text-zinc-300 text-lg font-medium group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
-              animate={{
-                display: open ? "inline-block" : "none",
-                opacity: open ? 1 : 0,
-              }}
-            >
-              Dashboard
-            </motion.p>
-          </Link>
-
-          <SideBarLink
-            open={open}
-            link="/"
-            label="DashBoard"
-            icon={
-              <IconChartBar
-                className={`text-zinc-300 ${open ? "w-6 h-6 mx-3" : "w-8 h-8"}`}
+          {menuLink.map((item, index) => (
+            <div key={index}>
+              <SideBarLink
+                open={open}
+                link={item.link}
+                label={item.label}
+                icon={item.icon}
               />
-            }
-          />
-
-          <Link
-            href="/transactions"
-            className="flex items-center justify-start gap-2 group/sidebar py-2"
-          >
-            <IconTransactionRupee
-              className={`text-zinc-300 ${open ? "w-6 h-6 mx-3" : "w-8 h-8"}`}
-            />
-            <motion.p
-              className="text-zinc-300 text-lg font-medium group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
-              animate={{
-                display: open ? "inline-block" : "none",
-                opacity: open ? 1 : 0,
-              }}
-            >
-              Transaction
-            </motion.p>
-          </Link>
-          <Link
-            href="/category"
-            className="flex items-center justify-start gap-2 group/sidebar py-2"
-          >
-            <IconCategory
-              className={`text-zinc-300 ${open ? "w-6 h-6 mx-3" : "w-8 h-8"}`}
-            />
-            <motion.p
-              className="text-zinc-300 text-lg font-medium group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
-              animate={{
-                display: open ? "inline-block" : "none",
-                opacity: open ? 1 : 0,
-              }}
-            >
-              Categories
-            </motion.p>
-          </Link>
-          <Link
-            href="/bank"
-            className="flex items-center justify-start gap-2 group/sidebar py-2"
-          >
-            <IconBuildingBank
-              className={`text-zinc-300 ${open ? "w-6 h-6 mx-3" : "w-8 h-8"}`}
-            />
-            <motion.p
-              className="text-zinc-300 text-lg font-medium group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
-              animate={{
-                display: open ? "inline-block" : "none",
-                opacity: open ? 1 : 0,
-              }}
-            >
-              Banks
-            </motion.p>
-          </Link>
+            </div>
+          ))}
         </div>
 
         <div className="flex flex-col space-y-1">
@@ -206,21 +174,42 @@ const Sidebar = () => {
 export default Sidebar;
 
 export const SideBarLink = ({ open, label, link, icon }) => {
+  const [showTooltip, setShowTooltip] = useState();
   return (
-    <Link
-      href={link}
-      className="flex items-center justify-start gap-2 group/sidebar py-2"
+    <div
+      className="flex items-center relative"
+      onMouseLeave={() => setShowTooltip(false)}
+      onMouseEnter={() => setShowTooltip(true)}
     >
-      {icon}
-      <motion.p
-        className="text-zinc-300 text-lg font-medium group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
-        animate={{
-          display: open ? "inline-block" : "none",
-          opacity: open ? 1 : 0,
-        }}
+      <Link
+        href={link}
+        className="flex items-center justify-start gap-2 group/sidebar py-2"
       >
-        {label}
-      </motion.p>
-    </Link>
+        {icon}
+        <motion.p
+          className="text-zinc-300 text-lg font-medium group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+          animate={{
+            display: open ? "inline-block" : "none",
+            opacity: open ? 1 : 0,
+          }}
+        >
+          {label}
+        </motion.p>
+      </Link>
+
+      {!open && showTooltip && (
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{
+            opacity: showTooltip ? 1 : 0,
+            x: showTooltip ? 0 : -10,
+          }}
+          transition={{ duration: 0.3 }}
+          className="absolute left-full ml-2 px-2 py-1 bg-gray-700 text-white text-sm rounded shadow-lg"
+        >
+          {label}
+        </motion.div>
+      )}
+    </div>
   );
 };

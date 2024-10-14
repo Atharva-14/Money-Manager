@@ -2,52 +2,35 @@ import AddNewCategory from "@/components/Category/AddNewCategory";
 import PrivateRoute from "@/components/PrivateRoute/PrivateRoute";
 import SkeletonCategory from "@/components/Skeleton/SkeletonCategory";
 import { useAuth } from "@/context/AuthContext";
+import { getCategory } from "@/store/async-thunk";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const Category = () => {
-  const [activeTab, setActiveTab] = useState("expense");
+  const dispatch = useDispatch();
+
   const { token } = useAuth();
-  const [expenses, setExpenses] = useState([]);
-  const [incomes, setIncomes] = useState([]);
+  // const [expenses, setExpenses] = useState([]);
+  // const [incomes, setIncomes] = useState([]);
+  const [activeTab, setActiveTab] = useState("expense");
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [isLoading, setLoading] = useState(false);
+  // const [isLoading, setLoading] = useState(false);
+
+  const expenses = useSelector((state) => state.category.expenseList);
+  const incomes = useSelector((state) => state.category.incomeList);
+  const isLoading = useSelector((state) => state.category.loading);
+
+  useEffect(() => {
+    if (token) {
+      dispatch(getCategory(token));
+    }
+  }, [dispatch, token]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-  };
-
-  const getCategories = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(
-        `https://money-manager-backend-bsdc.onrender.com/api/categories/`,
-        {
-          params: {
-            token,
-          },
-        }
-      );
-
-      const categories = res.data.result;
-
-      const expenseCategories = categories.filter(
-        (category) => category.type_of === "expense"
-      );
-
-      const incomeCategories = categories.filter(
-        (category) => category.type_of === "income"
-      );
-
-      setExpenses(expenseCategories);
-      setIncomes(incomeCategories);
-    } catch (error) {
-      console.log("Failed to fetch Categories", error);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const openCategoryModal = (category = null) => {
@@ -60,20 +43,14 @@ const Category = () => {
     setSelectedCategory(null);
   };
 
-  useEffect(() => {
-    getCategories();
-  }, []);
-
   const displayedCategories = activeTab === "expense" ? expenses : incomes;
-
-  console.log(displayedCategories);
 
   return (
     <>
       <AddNewCategory
         open={isModalOpen}
         onClose={closeCategoryModal}
-        onCategoryAdded={getCategories}
+        onCategoryAdded={() => dispatch(getCategory(token))}
         categoryData={selectedCategory}
       />
       <div className=" min-h-max flex flex-col py-10 px-[100px]">
